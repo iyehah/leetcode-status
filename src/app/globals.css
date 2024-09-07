@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .dark {
+    --bg-color: #1a202c; /* Dark background */
+    --text-color: #edf2f7; /* Light text */
+  }
+}
+
+.bg-gray-800 {
+  background-color: var(--bg-color);
+}
+
+.text-white {
+  color: var(--text-color);
+}
