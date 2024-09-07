@@ -1,45 +1,10 @@
-import { createCanvas, CanvasRenderingContext2D } from 'canvas';
 import { fetchLeetCodeData } from '@/utils/leetcode';
 import { lightTheme } from '@/themes/light';
 import { darkTheme } from '@/themes/dark';
 import { transparentTheme } from '@/themes/transparent';
 import { ApiRequest, ApiResponse, LeetCodeData } from '@/types';
 
-function drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
-  ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.arcTo(x + width, y, x + width, y + height, radius);
-  ctx.arcTo(x + width, y + height, x, y + height, radius);
-  ctx.arcTo(x, y + height, x, y, radius);
-  ctx.arcTo(x, y, x + width, y, radius);
-  ctx.closePath();
-}
-
-async function handleGetRequest(
-  username: string,
-  theme: string,
-  border: boolean,
-  hideTitle: boolean,
-  customTitle: string | undefined,
-  res: ApiResponse
-) {
-  const data: LeetCodeData = await fetchLeetCodeData(username);
-
-  if (!data || isNaN(data.totalSolved) || isNaN(data.totalEasy) || isNaN(data.totalMedium) || isNaN(data.totalHard)) {
-    return res.status(500).json({ error: 'Failed to generate image: Invalid or incomplete data' });
-  }
-
-  const canvasWidth = 500;
-  const canvasHeight = 200;
-  const canvas = createCanvas(canvasWidth, canvasHeight);
-  const context = canvas.getContext('2d');
- 
-
-
-  if (!context) {
-    return res.status(500).json({ error: 'Failed to create canvas context' });
-  }
-
+function createSVG(username: string, theme: string, border: boolean, hideTitle: boolean, customTitle: string | undefined, data: LeetCodeData) {
   let themeColors = lightTheme;
   if (theme === 'dark') {
     themeColors = darkTheme;
@@ -56,53 +21,53 @@ async function handleGetRequest(
     borderColor
   } = themeColors;
 
-  context.fillStyle = backgroundColor;
-  drawRoundedRect(context, 0, 0, canvasWidth, canvasHeight, 20);
-  context.fill();
+  const canvasWidth = 500;
+  const canvasHeight = 200;
+
+  const title = customTitle ? customTitle : `${username}'s LeetCode Status`;
+
+  const totalSolved = data.totalSolved;
+  const easySolved = data.easySolved;
+  const mediumSolved = data.mediumSolved;
+  const hardSolved = data.hardSolved;
+  const totalEasy = data.totalEasy;
+  const totalMedium = data.totalMedium;
+  const totalHard = data.totalHard;
+
+  const progressArc = (totalSolved / (totalEasy + totalMedium + totalHard)) * 2 * Math.PI;
+
+  const bars = [
+    { label: 'Easy', solved: easySolved, total: totalEasy, color: '#10B981' },
+    { label: 'Medium', solved: mediumSolved, total: totalMedium, color: '#F59E0B' },
+    { label: 'Hard', solved: hardSolved, total: totalHard, color: '#EF4444' }
+  ];
+
+  const svgParts = [
+    `<svg width="${canvasWidth}" height="${canvasHeight}" xmlns="http://www.w3.org/2000/svg">`,
+    `<rect x="0" y="0" width="${canvasWidth}" height="${canvasHeight}" rx="20" ry="20" fill="${backgroundColor}" />`
+  ];
 
   if (border) {
-    context.strokeStyle = borderColor;
-    context.lineWidth = 2;
-    drawRoundedRect(context, 0, 0, canvasWidth, canvasHeight, 20);
-    context.stroke();
+    svgParts.push(
+      `<rect x="0" y="0" width="${canvasWidth}" height="${canvasHeight}" rx="20" ry="20" fill="none" stroke="${borderColor}" stroke-width="2" />`
+    );
   }
 
   if (!hideTitle) {
-    const title = customTitle ? customTitle : `${username}'s LeetCode Status`;
-    context.fillStyle = textColor;
-    // context.font = 'bold 20px Arial';
-    const titleX = canvasWidth /context.measureText(title).width +10;
-    context.fillText(title, titleX, 40);
+    svgParts.push(
+      `<text x="${canvasWidth / 2}" y="40" font-size="20" font-weight="bold" text-anchor="middle" fill="${textColor}">${title}</text>`
+    );
   }
 
   const centerX = 80;
   const centerY = hideTitle ? 100 : 120;
   const radius = 50;
-  const totalSolved = data.totalSolved;
 
-  context.beginPath();
-  context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-  context.fillStyle = progressBackgroundColor;
-  context.fill();
-
-  const progressArc = (totalSolved / (data.totalEasy + data.totalMedium + data.totalHard)) * 2 * Math.PI;
-  context.beginPath();
-  context.arc(centerX, centerY, radius * 0.9, -Math.PI / 2, -Math.PI / 2 + progressArc);
-  context.strokeStyle = progressBarFillColor;
-  context.lineWidth = 8;
-  context.stroke();
-
-  context.fillStyle = textColor;
-  context.font = 'bold 20px Arial';
-  const text = totalSolved.toString();
-  const textWidth = context.measureText(text).width;
-  context.fillText(text, centerX - textWidth / 2, centerY + 8);
-
-  const bars = [
-    { label: 'Easy', solved: data.easySolved, total: data.totalEasy, color: '#10B981' },
-    { label: 'Medium', solved: data.mediumSolved, total: data.totalMedium, color: '#F59E0B' },
-    { label: 'Hard', solved: data.hardSolved, total: data.totalHard, color: '#EF4444' }
-  ];
+  svgParts.push(
+    `<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="${progressBackgroundColor}" />`,
+    `<path d="M ${centerX} ${centerY} m -${radius * 0.9}, 0 a ${radius * 0.9} ${radius * 0.9} 0 1,1 ${2 * radius * 0.9} 0 a ${radius * 0.9} ${radius * 0.9} 0 1,1 -${2 * radius * 0.9} 0" stroke="${progressBarFillColor}" stroke-width="8" fill="none" stroke-dasharray="${progressArc} ${2 * Math.PI * radius * 0.9}" stroke-dashoffset="0" />`,
+    `<text x="${centerX}" y="${centerY + 8}" font-size="20" font-weight="bold" text-anchor="middle" fill="${textColor}">${totalSolved}</text>`
+  );
 
   bars.forEach((bar, index) => {
     const barX = 220;
@@ -110,27 +75,41 @@ async function handleGetRequest(
     const barWidth = canvasWidth * 0.35;
     const barHeight = 10;
     const filledWidth = Math.min((bar.solved / bar.total) * barWidth, barWidth); // Ensure filled width doesn't exceed bar width
-    const cornerRadius = 6;
 
-    context.fillStyle = textColor;
-    context.font = 'bold 16px Arial';
-    context.fillText(`${bar.label}`, barX - 70, barY + 10);
-    context.fillText(`${bar.solved} / ${bar.total}`, barX + barWidth + 10, barY + 10);
-
-    context.fillStyle = progressBarBackgroundColor;
-    drawRoundedRect(context, barX, barY, barWidth, barHeight, cornerRadius);
-    context.fill();
-
-    context.fillStyle = bar.color;
-    drawRoundedRect(context, barX, barY, filledWidth, barHeight, cornerRadius);
-    context.fill();
+    svgParts.push(
+      `<text x="${barX - 70}" y="${barY + 10}" font-size="16" font-weight="bold" fill="${textColor}">${bar.label}</text>`,
+      `<text x="${barX + barWidth + 10}" y="${barY + 10}" font-size="16" font-weight="bold" fill="${textColor}">${bar.solved} / ${bar.total}</text>`,
+      `<rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="6" ry="6" fill="${progressBarBackgroundColor}" />`,
+      `<rect x="${barX}" y="${barY}" width="${filledWidth}" height="${barHeight}" rx="6" ry="6" fill="${bar.color}" />`
+    );
   });
 
-  const buffer = canvas.toBuffer('image/png');
+  svgParts.push('</svg>');
 
-  res.setHeader('Content-Type', 'image/png');
-  res.setHeader('Content-Disposition', `inline; filename="${username}-leetcode-stats.png"`);
-  res.status(200).end(buffer);
+  return svgParts.join('\n');
+}
+
+async function handleGetRequest(
+  username: string,
+  theme: string,
+  border: boolean,
+  hideTitle: boolean,
+  customTitle: string | undefined,
+  res: ApiResponse
+) {
+  const data: LeetCodeData = await fetchLeetCodeData(username);
+
+  if (!data || isNaN(data.totalSolved) || isNaN(data.totalEasy) || isNaN(data.totalMedium) || isNaN(data.totalHard)) {
+    return res.status(500).json({ error: 'Failed to generate image: Invalid or incomplete data' });
+  }
+
+  const svgContent = createSVG(username, theme, border, hideTitle, customTitle, data);
+
+  const buffer = Buffer.from(svgContent, 'utf-8'); // Convert SVG string to Buffer
+
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.setHeader('Content-Disposition', `inline; filename="${username}-leetcode-stats.svg"`);
+  res.status(200).end(buffer); // Use end() with Buffer
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
