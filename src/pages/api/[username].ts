@@ -10,7 +10,9 @@ function createSVG(
   border: boolean, 
   hideTitle: boolean, 
   customTitle: string | undefined, 
-  data: LeetCodeData
+  data: LeetCodeData,
+  animation: boolean,
+  animationDuration: string
 ): string {
   let themeColors = lightTheme;
   
@@ -39,7 +41,7 @@ function createSVG(
 
   const progressPercentage = isNaN(totalSolved / (totalEasy + totalMedium + totalHard)) ? 0 : totalSolved / (totalEasy + totalMedium + totalHard);
   const circumference = 2 * Math.PI * 50;
-  const progressArc = progressPercentage * circumference; // Updated to use percentage
+  const progressArc = progressPercentage * circumference;
 
   const svgParts: string[] = [
     `<svg width="${canvasWidth}" height="${canvasHeight}" xmlns="http://www.w3.org/2000/svg">`,
@@ -65,8 +67,9 @@ function createSVG(
   // Circle with Progress Arc
   svgParts.push(
     `<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="${progressBackgroundColor}" stroke="${progressBarBackgroundColor}" stroke-width="4"/>`,
-    `<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="none" stroke="${progressBarFillColor}" stroke-width="${progressPercentage == 0 ? 0 : 4}"
-        stroke-dasharray="${progressArc} ${circumference}" stroke-linecap="round" transform="rotate(-90 ${centerX} ${centerY})" />`,
+    `<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="none" stroke="${progressBarFillColor}" stroke-width="4"
+        stroke-dasharray="${progressArc} ${circumference}" stroke-linecap="round" transform="rotate(-90 ${centerX} ${centerY})" 
+        class="${animation ? 'animated-progress' : ''}" />`,
     `<text x="${centerX}" y="${centerY + 8}" font-size="20" font-weight="bold" text-anchor="middle" fill="${textColor}">${totalSolved}</text>`
   );
 
@@ -88,9 +91,38 @@ function createSVG(
       `<text x="${barX - 70}" y="${barY + 10}" font-size="16" font-weight="" fill="${textColor}">${bar.label}</text>`,
       `<text x="${barX + barWidth + 10}" y="${barY + 10}" font-size="16" font-weight="" fill="${textColor}">${bar.solved} / ${bar.total}</text>`,
       `<rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}"  rx="3" ry="3" fill="${progressBarBackgroundColor}" />`,
-      `<rect x="${barX}" y="${barY}" width="${isNaN(filledWidth)? 0 : filledWidth}" height="${barHeight}" rx="3" ry="3" fill="${bar.color}" />`
+      `<rect x="${barX}" y="${barY}" width="${isNaN(filledWidth) ? 0 : filledWidth}" height="${barHeight}" rx="3" ry="3" fill="${bar.color}" class="${animation ? 'animated-bar' : ''}" />`
     );
   });
+
+  if (animation) {
+    svgParts.push(
+      `<style>
+        .animated-progress {
+          animation: progressAnimation ${animationDuration} ease-in-out;
+        }
+        .animated-bar {
+          animation: barAnimation ${animationDuration} ease-in-out;
+        }
+        @keyframes progressAnimation {
+          from {
+            stroke-dasharray: 0 ${circumference};
+          }
+          to {
+            stroke-dasharray: ${progressArc} ${circumference};
+          }
+        }
+        @keyframes barAnimation {
+          from {
+            width: 0;
+          }
+          to {
+            width: ${progressArc};
+          }
+        }
+      </style>`
+    );
+  }
 
   svgParts.push('</svg>');
   return svgParts.join('\n');
@@ -102,6 +134,8 @@ async function handleGetRequest(
   border: boolean,
   hideTitle: boolean,
   customTitle: string | undefined,
+  animation: boolean,
+  animationDuration: string,
   res: ApiResponse
 ) {
   const data: LeetCodeData = await fetchLeetCodeData(username);
@@ -110,15 +144,15 @@ async function handleGetRequest(
     return res.status(500).json({ error: 'Failed to generate image: Invalid or incomplete data' });
   }
 
-  const svgContent = createSVG(username, theme, border, hideTitle, customTitle, data);
-  const buffer = Buffer.from(svgContent, 'utf-8'); // Convert SVG string to Buffer
+  const svgContent = createSVG(username, theme, border, hideTitle, customTitle, data, animation, animationDuration);
+  const buffer = Buffer.from(svgContent, 'utf-8');
   res.setHeader('Content-Type', 'image/svg+xml');
   res.setHeader('Content-Disposition', `inline; filename="${username}-leetcode-stats.svg"`);
-  res.status(200).end(buffer); // Use end() with Buffer
+  res.status(200).end(buffer);
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
-  const { username, theme = 'light', border = 'true', hide_title = 'false', custom_title } = req.query;
+  const { username, theme = 'light', border = 'true', hide_title = 'false', custom_title, animation = 'true', animation_duration = '2s' } = req.query;
 
   if (!username) {
     return res.status(400).json({ error: 'Username not provided' });
@@ -126,9 +160,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
   const borderOption = border === 'true';
   const hideTitle = hide_title === 'true';
+  const animationOption = animation === 'true';
+  const animationDuration = typeof animation_duration === 'string' ? animation_duration : '2s';
 
   if (req.method === 'GET') {
-    return await handleGetRequest(username, theme, borderOption, hideTitle, custom_title, res);
+    return await handleGetRequest(username, theme, borderOption, hideTitle, custom_title, animationOption, animationDuration, res);
   } else {
     return res.status(405).json({ error: 'Method not allowed' });
   }

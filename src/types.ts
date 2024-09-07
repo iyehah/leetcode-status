@@ -24,6 +24,8 @@ export interface ThemeColors {
       border?: string;
       hide_title?: string;  
       custom_title?: string; 
+      animation?: string;
+      animation_duration?: string;
     };
     method: string;
   }
