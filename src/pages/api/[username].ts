@@ -4,8 +4,16 @@ import { darkTheme } from '@/themes/dark';
 import { transparentTheme } from '@/themes/transparent';
 import { ApiRequest, ApiResponse, LeetCodeData } from '@/types';
 
-function createSVG(username: string, theme: string, border: boolean, hideTitle: boolean, customTitle: string | undefined, data: LeetCodeData) {
+function createSVG(
+  username: string, 
+  theme: string, 
+  border: boolean, 
+  hideTitle: boolean, 
+  customTitle: string | undefined, 
+  data: LeetCodeData
+): string {
   let themeColors = lightTheme;
+  
   if (theme === 'dark') {
     themeColors = darkTheme;
   } else if (theme === 'transparent') {
@@ -23,26 +31,17 @@ function createSVG(username: string, theme: string, border: boolean, hideTitle: 
 
   const canvasWidth = 500;
   const canvasHeight = 200;
-
   const title = customTitle ? customTitle : `${username}'s LeetCode Status`;
-
   const totalSolved = data.totalSolved;
-  const easySolved = data.easySolved;
-  const mediumSolved = data.mediumSolved;
-  const hardSolved = data.hardSolved;
   const totalEasy = data.totalEasy;
   const totalMedium = data.totalMedium;
   const totalHard = data.totalHard;
 
-  const progressArc = (totalSolved / (totalEasy + totalMedium + totalHard)) * 2 * Math.PI;
+  const progressPercentage = isNaN(totalSolved / (totalEasy + totalMedium + totalHard)) ? 0 : totalSolved / (totalEasy + totalMedium + totalHard);
+  const circumference = 2 * Math.PI * 50;
+  const progressArc = progressPercentage * circumference; // Updated to use percentage
 
-  const bars = [
-    { label: 'Easy', solved: easySolved, total: totalEasy, color: '#10B981' },
-    { label: 'Medium', solved: mediumSolved, total: totalMedium, color: '#F59E0B' },
-    { label: 'Hard', solved: hardSolved, total: totalHard, color: '#EF4444' }
-  ];
-
-  const svgParts = [
+  const svgParts: string[] = [
     `<svg width="${canvasWidth}" height="${canvasHeight}" xmlns="http://www.w3.org/2000/svg">`,
     `<rect x="0" y="0" width="${canvasWidth}" height="${canvasHeight}" rx="20" ry="20" fill="${backgroundColor}" />`
   ];
@@ -63,29 +62,37 @@ function createSVG(username: string, theme: string, border: boolean, hideTitle: 
   const centerY = hideTitle ? 100 : 120;
   const radius = 50;
 
+  // Circle with Progress Arc
   svgParts.push(
-    `<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="${progressBackgroundColor}" />`,
-    `<path d="M ${centerX} ${centerY} m -${radius * 0.9}, 0 a ${radius * 0.9} ${radius * 0.9} 0 1,1 ${2 * radius * 0.9} 0 a ${radius * 0.9} ${radius * 0.9} 0 1,1 -${2 * radius * 0.9} 0" stroke="${progressBarFillColor}" stroke-width="8" fill="none" stroke-dasharray="${progressArc} ${2 * Math.PI * radius * 0.9}" stroke-dashoffset="0" />`,
+    `<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="${progressBackgroundColor}" stroke="${progressBarBackgroundColor}" stroke-width="4"/>`,
+    `<circle cx="${centerX}" cy="${centerY}" r="${radius}" fill="none" stroke="${progressBarFillColor}" stroke-width="${progressPercentage == 0 ? 0 : 4}"
+        stroke-dasharray="${progressArc} ${circumference}" stroke-linecap="round" transform="rotate(-90 ${centerX} ${centerY})" />`,
     `<text x="${centerX}" y="${centerY + 8}" font-size="20" font-weight="bold" text-anchor="middle" fill="${textColor}">${totalSolved}</text>`
   );
+
+  // Progress Bars
+  const bars = [
+    { label: 'Easy', solved: data.easySolved, total: totalEasy, color: '#10B981' },
+    { label: 'Medium', solved: data.mediumSolved, total: totalMedium, color: '#F59E0B' },
+    { label: 'Hard', solved: data.hardSolved, total: totalHard, color: '#EF4444' }
+  ];
 
   bars.forEach((bar, index) => {
     const barX = 220;
     const barY = hideTitle ? 40 + index * 50 : 60 + index * 50;
     const barWidth = canvasWidth * 0.35;
-    const barHeight = 10;
-    const filledWidth = Math.min((bar.solved / bar.total) * barWidth, barWidth); // Ensure filled width doesn't exceed bar width
+    const barHeight = 4;
+    const filledWidth = Math.min((bar.solved / bar.total) * barWidth, barWidth);
 
     svgParts.push(
-      `<text x="${barX - 70}" y="${barY + 10}" font-size="16" font-weight="bold" fill="${textColor}">${bar.label}</text>`,
-      `<text x="${barX + barWidth + 10}" y="${barY + 10}" font-size="16" font-weight="bold" fill="${textColor}">${bar.solved} / ${bar.total}</text>`,
-      `<rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}" rx="6" ry="6" fill="${progressBarBackgroundColor}" />`,
-      `<rect x="${barX}" y="${barY}" width="${filledWidth}" height="${barHeight}" rx="6" ry="6" fill="${bar.color}" />`
+      `<text x="${barX - 70}" y="${barY + 10}" font-size="16" font-weight="" fill="${textColor}">${bar.label}</text>`,
+      `<text x="${barX + barWidth + 10}" y="${barY + 10}" font-size="16" font-weight="" fill="${textColor}">${bar.solved} / ${bar.total}</text>`,
+      `<rect x="${barX}" y="${barY}" width="${barWidth}" height="${barHeight}"  rx="3" ry="3" fill="${progressBarBackgroundColor}" />`,
+      `<rect x="${barX}" y="${barY}" width="${isNaN(filledWidth)? 0 : filledWidth}" height="${barHeight}" rx="3" ry="3" fill="${bar.color}" />`
     );
   });
 
   svgParts.push('</svg>');
-
   return svgParts.join('\n');
 }
 
@@ -104,9 +111,7 @@ async function handleGetRequest(
   }
 
   const svgContent = createSVG(username, theme, border, hideTitle, customTitle, data);
-
   const buffer = Buffer.from(svgContent, 'utf-8'); // Convert SVG string to Buffer
-
   res.setHeader('Content-Type', 'image/svg+xml');
   res.setHeader('Content-Disposition', `inline; filename="${username}-leetcode-stats.svg"`);
   res.status(200).end(buffer); // Use end() with Buffer
