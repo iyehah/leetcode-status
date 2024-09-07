@@ -70,7 +70,7 @@ async function handleGetRequest(
   if (!hideTitle) {
     const title = customTitle ? customTitle : `${username}'s LeetCode Status`;
     context.fillStyle = textColor;
-    context.font = 'bold 20px Arial';
+    // context.font = 'bold 20px Arial';
     const titleX = canvasWidth /context.measureText(title).width +10;
     context.fillText(title, titleX, 40);
   }
