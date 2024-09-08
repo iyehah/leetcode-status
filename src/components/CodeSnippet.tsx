@@ -29,7 +29,7 @@ const CodeSnippet: React.FC<CodeSnippetProps> = ({ username, theme, border, hide
   };
 
   return (
-    <div className="dark:text-white text-black bg-gray-800 p-4 rounded-md max-w-full overflow-hidden shadow-lg">
+    <div className="dark:text-white text-black dark:bg-gray-800 p-4 rounded-md max-w-full overflow-hidden shadow-lg">
       <div className="mb-4">
         <h4 className="text-lg  mb-2">Markdown Code</h4>
         <pre className="bg-gray-200 dark:bg-gray-700 p-3 rounded-md overflow-x-auto">
