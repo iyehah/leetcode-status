@@ -26,6 +26,8 @@ export interface ThemeColors {
       custom_title?: string; 
       animation?: string;
       animation_duration?: string;
+      logo?: string;
+      logo_color?: string;
     };
     method: string;
   }
