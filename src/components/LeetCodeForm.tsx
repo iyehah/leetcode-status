@@ -19,7 +19,7 @@ const LeetCodeForm: React.FC<LeetCodeFormProps> = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4 p-2 sm:px-6 md:px-8 lg:px-10 rounded max-w-md mx-auto text-black dark:text-white bg-gray-800 shadow-lg">
+    <form onSubmit={handleSubmit} className="mb-4 p-2 sm:px-6 md:px-8 lg:px-10 rounded max-w-md mx-auto text-black dark:text-white dark:bg-gray-800 shadow-lg">
       <div className="mb-4">
         <label htmlFor="username" className="block text-sm font-medium ">
           LeetCode Username

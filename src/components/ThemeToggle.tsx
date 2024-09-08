@@ -1,4 +1,3 @@
-// components/ThemeToggle.tsx
 'use client';
 import React from 'react';
 import { FaSun, FaMoon } from 'react-icons/fa';
