@@ -7,6 +7,7 @@ import Navbar from '../components/Navbar';
 
 export default function Home() {
   const [username, setUsername] = useState('');
+  const [type, setType] = useState('');
   const [theme, setTheme] = useState('light');
   const [border, setBorder] = useState(true);
   const [hideTitle, setHideTitle] = useState(false);
@@ -18,8 +19,9 @@ export default function Home() {
     document.documentElement.classList.toggle('dark', isDarkMode);
   }, [isDarkMode]);
 
-  const handleSubmit = (username: string, theme: string, border: boolean, hideTitle: boolean, customTitle: string) => {
+  const handleSubmit = (username: string,type: string, theme: string, border: boolean, hideTitle: boolean, customTitle: string) => {
     setUsername(username);
+    setType(type);
     setTheme(theme);
     setBorder(border);
     setHideTitle(hideTitle);
@@ -37,6 +39,7 @@ export default function Home() {
             <>
               <LeetCodeCard
                 username={username}
+                type={type}
                 theme={theme}
                 border={border}
                 hide_title={hideTitle}
@@ -44,6 +47,7 @@ export default function Home() {
               />
               <CodeSnippet
                 username={username}
+                type={type}
                 theme={theme}
                 border={border}
                 hideTitle={hideTitle}

@@ -1,21 +1,23 @@
 'use client';
 import React, { useState } from 'react';
 import { GoCopy } from "react-icons/go";
+import { types } from 'util';
 
 interface CodeSnippetProps {
   username: string;
+  type:string;
   theme: string;
   border: boolean;
   hideTitle: boolean;
   customTitle: string;
 }
 
-const CodeSnippet: React.FC<CodeSnippetProps> = ({ username, theme, border, hideTitle, customTitle }) => {
+const CodeSnippet: React.FC<CodeSnippetProps> = ({ username,type, theme, border, hideTitle, customTitle }) => {
   const [copySuccess, setCopySuccess] = useState('');
 
   // Generate URLs based on props
-  const markdownUrl = `![${customTitle} Stats](https://leetcode-status.vercel.app/api/${username}?theme=${theme}&hide_title=${hideTitle}&custom_title=${customTitle})`;
-  const imgUrl = `<img src="https://leetcode-status.vercel.app/api/${username}?theme=${theme}&border=${border}&hide_title=${hideTitle}&custom_title=${customTitle}" />`;
+  const markdownUrl = `![${customTitle} Stats](https://leetcode-status.vercel.app/api/${type}/${username}?theme=${theme}&hide_title=${hideTitle}&custom_title=${customTitle})`;
+  const imgUrl = `<img src="https://leetcode-status.vercel.app/${type}/api/${username}?theme=${theme}&border=${border}&hide_title=${hideTitle}&custom_title=${customTitle}" />`;
 
   // Function to copy code to clipboard
   const copyToClipboard = async (code: string) => {

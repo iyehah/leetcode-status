@@ -4,12 +4,13 @@ import { fetchLeetCodeData } from '../utils/leetcode';
 type LeetCodeCardProps = {
   username: string;
   theme: string;
+  type: string;
   border: boolean;
   hide_title: boolean;
   custom_title: string;
 };
 
-const LeetCodeCard: React.FC<LeetCodeCardProps> = ({ username, theme, border, hide_title, custom_title }) => {
+const LeetCodeCard: React.FC<LeetCodeCardProps> = ({ username,type, theme, border, hide_title, custom_title }) => {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -32,7 +33,7 @@ const LeetCodeCard: React.FC<LeetCodeCardProps> = ({ username, theme, border, hi
   }
 
   // Construct the image URL using props
-  const imgUrl = `http://leetcode-status.vercel.app/api/${username}?theme=${theme}&border=${border}&hide_title=${hide_title}&custom_title=${custom_title}`;
+  const imgUrl = `http://leetcode-status.vercel.app/api/${type}/${username}?theme=${theme}&border=${border}&hide_title=${hide_title}&custom_title=${custom_title}`;
 
   return (
     <div className='flex items-center justify-center rounded'>

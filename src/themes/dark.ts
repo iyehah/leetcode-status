@@ -7,4 +7,5 @@ export const darkTheme: ThemeColors = {
   progressBarBackgroundColor: '#4B5563',
   progressBarFillColor: '#F59E0B',
   borderColor: '#ffffff',
+  gridLines: '#ffffff',
 };

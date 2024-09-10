@@ -52,7 +52,7 @@ function createSVG(
 
   if (border) {
     svgParts.push(
-      `<rect x="0" y="0" width="${canvasWidth}" height="${canvasHeight}" rx="20" ry="20" fill="none" stroke="${borderColor}" stroke-width="2" />`
+      `<rect x="0" y="0" width="${canvasWidth}" height="${canvasHeight}" rx="20" ry="20" fill="none" stroke="${borderColor}" stroke-width="0.5" />`
     );
   }
 

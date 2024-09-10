@@ -1,13 +1,15 @@
 'use client';
 import React, { useState } from 'react';
 import Button from './Button';
+import { type } from 'os';
 
 interface LeetCodeFormProps {
-  onSubmit: (username: string, theme: string, border: boolean, hideTitle: boolean, customTitle: string) => void;
+  onSubmit: (username: string,type: string, theme: string, border: boolean, hideTitle: boolean, customTitle: string) => void;
 }
 
 const LeetCodeForm: React.FC<LeetCodeFormProps> = ({ onSubmit }) => {
   const [username, setUsername] = useState('');
+  const [type, setType] = useState('card');
   const [theme, setTheme] = useState('light'); // Default theme is light
   const [border, setBorder] = useState(true); // Default border is true
   const [hideTitle, setHideTitle] = useState(true); // Default hideTitle is true
@@ -15,7 +17,7 @@ const LeetCodeForm: React.FC<LeetCodeFormProps> = ({ onSubmit }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(username, theme, border, hideTitle, customTitle); // Pass all form values
+    onSubmit(username,type, theme, border, hideTitle, customTitle); // Pass all form values
   };
 
   return (
@@ -32,6 +34,20 @@ const LeetCodeForm: React.FC<LeetCodeFormProps> = ({ onSubmit }) => {
           className="mt-1 p-2 block w-full border border-gray-700 rounded-md dark:text-gray-800"
           required
         />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="type" className="block text-sm font-medium ">
+          Type
+        </label>
+        <select
+          id="type"
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          className="mt-1 p-2 block w-full border border-gray-300 rounded-md dark:text-gray-800"
+        >
+          <option value="card">Card (Default)</option>
+          <option value="graph">Graph</option>
+        </select>
       </div>
       <div className="mb-4">
         <label htmlFor="theme" className="block text-sm font-medium ">
