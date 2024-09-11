@@ -152,6 +152,5 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       parsedBarWidth
     );
   }
-
   return res.status(405).json({ error: 'Method not allowed' });
 }
