@@ -7,4 +7,5 @@ export const lightTheme: ThemeColors = {
   progressBarBackgroundColor: '#d1d5db',
   progressBarFillColor: '#10B981',
   borderColor: '#000000',
+  gridLines: '#000000',
 };

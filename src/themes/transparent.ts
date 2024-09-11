@@ -7,4 +7,5 @@ export const transparentTheme: ThemeColors = {
   progressBarBackgroundColor: 'rgba(0, 0, 0, 0.05)',
   progressBarFillColor: '#F59E0B',
   borderColor: '#1E90FF',
+  gridLines: '#1E90FF',
 };

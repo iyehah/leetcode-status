@@ -5,6 +5,7 @@ export interface ThemeColors {
     progressBarBackgroundColor: string;
     progressBarFillColor: string;
     borderColor: string;
+    gridLines: string;
   }
   
   export interface LeetCodeData {
@@ -28,6 +29,7 @@ export interface ThemeColors {
       animation_duration?: string;
       logo?: string;
       logo_color?: string;
+      bars_width?: string;
     };
     method: string;
   }
