@@ -16,11 +16,11 @@ Alternatively, you can use the <img> tag:
 
 Choose from the available themes to match your profile's style:
 
-|        Name        |                             Preview                                                                                 |
-| :----------------: | :-----------------------------------------------------------------------------------------------------------------: |
-| *light (Default)*  | <img src="https://leetcode-status.vercel.app/api/numb3r5?theme=light&logo=true&logo_color=theme&custom_title=Iyehah%20Hacen" height=150/>       |
-|      *dark*        | <img src="https://leetcode-status.vercel.app/api/numb3r5?theme=dark&logo=true&logo_color=theme&custom_title=Iyehah%20Hacen" height=150/>        |
-|  *transparent*     | <img src="https://leetcode-status.vercel.app/api/numb3r5?theme=transparent&logo=true&logo_color=theme&custom_title=Iyehah%20Hacen" height=150/> |
+|        Name        |                                          Card Preview                                                                                           |Graph Preview|
+| :----------------: | :---------------------------------------------------------------------------------------------------------------------------------------------: |:-------:|
+| *light (Default)*  | <img src="https://leetcode-status.vercel.app/api/card/numb3r5?theme=light&logo=true&logo_color=theme&custom_title=Iyehah%20Hacen" height=150/>       |<img src="https://leetcode-status.vercel.app/api/graph/numb3r5?theme=light&logo=true&logo_color=theme&custom_title=Iyehah%20Hacen" height=150/>       |
+|      *dark*        | <img src="https://leetcode-status.vercel.app/api/card/numb3r5?theme=dark&logo=true&logo_color=theme&custom_title=Iyehah%20Hacen" height=150/>        |<img src="https://leetcode-status.vercel.app/api/graph/numb3r5?theme=dark&logo=true&logo_color=theme&custom_title=Iyehah%20Hacen" height=150/>        |
+|  *transparent*     | <img src="https://leetcode-status.vercel.app/api/card/numb3r5?theme=transparent&logo=true&logo_color=theme&custom_title=Iyehah%20Hacen" height=150/> |<img src="https://leetcode-status.vercel.app/api/graph/numb3r5?theme=transparent&logo=true&logo_color=theme&custom_title=Iyehah%20Hacen" height=150/>|
 
 ## Customization
 
@@ -44,7 +44,9 @@ You can customize the appearance of your stats graph using various URL parameter
 ![Stats](https://leetcode-status.vercel.app/api/iyehah?theme=transparent&logo=true&custom_title=Iyehah%20Hacen&logo_color=%2300FF00)
 ```
 <div align="center">
-<img src="https://leetcode-status.vercel.app/api/numb3r5?theme=dark&&border=falselogo=true&custom_title=Iyehah%20Hacen&logo=true&logo_color=default"/>
+<img src="https://leetcode-status.vercel.app/api/card/numb3r5?theme=dark&&border=false&custom_title=Iyehah%20Hacen&logo=true&logo_color=default"/>
+  <br/>
+<img src="https://leetcode-status.vercel.app/api/graph/numb3r5?theme=dark&&border=false&custom_title=Iyehah%20Hacen&logo=true&logo_color=default&bars_width=50"/>
 </div>
 
 > - For `custom_title`, use `%20` for spaces (e.g., Iyehah%20Hacen).
