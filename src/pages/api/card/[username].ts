@@ -193,7 +193,7 @@ async function handleGetRequest(
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
-  const { username, theme = 'light', border = 'true', hide_title = 'false', custom_title, animation = 'true', animation_duration = '2s', logo = 'false',logo_color } = req.query;
+  const { username, theme = 'light', border = 'true', hide_title = 'false', custom_title, animation = 'true', animation_duration = '2s', logo = 'true',logo_color } = req.query;
 
   if (!username) {
     return res.status(400).json({ error: 'Username not provided' });
@@ -202,7 +202,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   const borderOption = border === 'true';
   const hideTitle = hide_title === 'true';
   const animationOption = animation === 'true';
-  const logoOption = logo === 'true';
+  const logoOption = logo === 'false';
   const animationDuration = typeof animation_duration === 'string' ? animation_duration : '2s';
 
   if (req.method === 'GET') {
