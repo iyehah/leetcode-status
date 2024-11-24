@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { fetchLeetCodeData } from '../utils/leetcode';
+import he from 'he';
 
 type LeetCodeCardProps = {
   username: string;
@@ -33,7 +34,7 @@ const LeetCodeCard: React.FC<LeetCodeCardProps> = ({ username,type, theme, borde
   }
 
   // Construct the image URL using props
-  const imgUrl = `http://leetcode-status.vercel.app/api/${type}/${username}?theme=${theme}&border=${border}&hide_title=${hide_title}&custom_title=${custom_title}`;
+  const imgUrl = `http://leetcode-status.vercel.app/api/${he.encode(type)}/${he.encode(username)}?theme=${he.encode(theme)}&border=${border}&hide_title=${hide_title}&custom_title=${he.encode(custom_title)}`;
 
   return (
     <div className='flex items-center justify-center rounded'>
