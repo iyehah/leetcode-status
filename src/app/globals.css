@@ -3,10 +3,10 @@
 @tailwind utilities;
 
 .tooltip::before {
-  content: '';
+  content: "";
   position: absolute;
-  top: 50%; 
-  left: -1rem; 
+  top: 50%;
+  left: -1rem;
   transform: translateY(-50%);
   border-width: 0.5rem;
   border-style: solid;

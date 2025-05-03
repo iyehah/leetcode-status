@@ -1,156 +1,179 @@
-import { fetchLeetCodeData } from '@/utils/leetcode';
-import { lightTheme } from '@/themes/light';
-import { darkTheme } from '@/themes/dark';
-import { transparentTheme } from '@/themes/transparent';
-import { ApiRequest, ApiResponse, LeetCodeData } from '@/types';
+import { fetchLeetCodeData } from "@/utils/leetcode";
+import { getTheme } from "@/utils/theme";
+import { parseQuery } from "@/utils/query";
+import {
+  ApiRequest,
+  ApiResponse,
+  LeetCodeData,
+  ThemeColors,
+} from "@/types/types";
 
+/**
+ * Constants for SVG dimensions and defaults
+ */
+const SVG_WIDTH = 500;
+const SVG_HEIGHT = 300;
+const BAR_WIDTH = 50;
+const BAR_SPACING = 40;
+const MAX_BAR_HEIGHT = 200;
+const DEFAULT_ANIMATION_DURATION = "2s";
+
+/**
+ * Renders the bar graph SVG
+ */
 function createBarGraphSVG(
-  easySolved: number,
-  mediumSolved: number,
-  hardSolved: number,
-  theme: string,
-  animation: boolean = true,
-  animationDuration: string = '5s',
-  border: boolean = false,
-  barWidth: number = 50
+  data: LeetCodeData,
+  theme: ThemeColors,
+  options: {
+    animation: boolean;
+    animationDuration: string;
+    border: boolean;
+    barWidth: number;
+    barColor: string | undefined;
+    textColor: string | undefined;
+  },
 ): string {
-  let themeColors = lightTheme;
-
-  if (theme === 'dark') {
-    themeColors = darkTheme;
-  } else if (theme === 'transparent') {
-    themeColors = transparentTheme;
-  }
-
   const {
-    backgroundColor,
-    textColor,
-    gridLines
-  } = themeColors;
-
-  // Define SVG container dimensions
-  const svgWidth = 500;
-  const svgHeight = 300;
-
-  // Define bar spacing
-  const barSpacing = 40;
-  const maxBarHeight = 200; // Max height for the tallest bar
-
-  // Calculate the max solved value to set the scale
-  const maxSolved = Math.max(easySolved, mediumSolved, hardSolved);
-  const scaleFactor = maxBarHeight / maxSolved;
-
-  // Dynamically calculate Y-axis labels
-  const yAxisLabels = Array.from({ length: 4 }, (_, i) => Math.round((maxSolved / 3) * i));
-
-  // Define colors for the bars
-  const easyColor = "#10B981";
-  const mediumColor = "#F59E0B";
-  const hardColor = "#EF4444";
-
-  // Border style for the bars
-  const barBorder = border ? `border:1px solid ${textColor};border-radius:12px;` : '';
-
-  // Optional animation
-  const animationCode = animation
-    ? `
-      <animate attributeName="height" from="0" to="${easySolved * scaleFactor}" dur="${animationDuration}" fill="freeze" />
-    `
-    : '';
-
-  // SVG elements
-  return `
-    <svg width="${svgWidth}" height="${svgHeight}" xmlns="http://www.w3.org/2000/svg" style="background-color: ${backgroundColor};${barBorder}">
-      <!-- X Axis -->
-      <line x1="50" y1="${svgHeight - 50}" x2="${svgWidth - 20}" y2="${svgHeight - 50}" stroke="${textColor}" stroke-width="2" />
-      
-      <!-- Y Axis -->
-      <line x1="50" y1="${svgHeight - 50}" x2="50" y2="30" stroke="${textColor}" stroke-width="2" />
-
-      <!-- Grid Lines and Numbers -->
-      ${yAxisLabels.map((label, i) => `
-        <line x1="50" y1="${svgHeight - 50 - (label * scaleFactor)}" x2="${svgWidth - 20}" y2="${svgHeight - 50 - (label * scaleFactor)}" stroke="${gridLines}" stroke-width="0.5"/>
-        <text x="20" y="${svgHeight - 50 - (label * scaleFactor)}" font-size="12" fill="${textColor}">${label}</text>
-      `).join('')}
-
-      <!-- Easy Bar -->
-      <rect x="100" y="${svgHeight - 50 - (easySolved * scaleFactor)}" width="${barWidth}" height="${easySolved * scaleFactor}" fill="${easyColor}">
-        ${animation ? `<animate attributeName="height" from="0" to="${easySolved * scaleFactor}" dur="${animationDuration}" fill="freeze" />` : ''}
-      </rect>
-      <text x="110" y="${svgHeight - 30}" font-size="14" fill="${textColor}">Easy</text>
-
-      <!-- Medium Bar -->
-      <rect x="200" y="${svgHeight - 50 - (mediumSolved * scaleFactor)}" width="${barWidth}" height="${mediumSolved * scaleFactor}" fill="${mediumColor}">
-        ${animation ? `<animate attributeName="height" from="0" to="${mediumSolved * scaleFactor}" dur="${animationDuration}" fill="freeze" />` : ''}
-      </rect>
-      <text x="200" y="${svgHeight - 30}" font-size="14" fill="${textColor}">Medium</text>
-
-      <!-- Hard Bar -->
-      <rect x="300" y="${svgHeight - 50 - (hardSolved * scaleFactor)}" width="${barWidth}" height="${hardSolved * scaleFactor}" fill="${hardColor}">
-        ${animation ? `<animate attributeName="height" from="0" to="${hardSolved * scaleFactor}" dur="${animationDuration}" fill="freeze" />` : ''}
-      </rect>
-      <text x="310" y="${svgHeight - 30}" font-size="14" fill="${textColor}">Hard</text>
-    </svg>
-  `;
-}
-
-async function handleGetRequest(
-  username: string,
-  res: ApiResponse,
-  theme: string,
-  animation: boolean,
-  animationDuration: string,
-  border: boolean,
-  barWidth: number
-) {
-  // Fetch the data from LeetCode API
-  const data: LeetCodeData = await fetchLeetCodeData(username);
-
-  // Validate data
-  if (!data || isNaN(data.totalSolved)) {
-    return res.status(500).json({ error: 'Failed to generate image: Invalid or incomplete data' });
-  }
-
-  // Generate the SVG content
-  const svgContent = createBarGraphSVG(
-    data.easySolved,
-    data.mediumSolved,
-    data.hardSolved,
-    theme,
     animation,
     animationDuration,
     border,
-    barWidth
-  );
-  const buffer = Buffer.from(svgContent, 'utf-8');
+    barWidth,
+    barColor,
+    textColor,
+  } = options;
+  const {
+    backgroundColor,
+    textColor: themeTextColor,
+    gridLines,
+  } = textColor ? { ...theme, textColor } : theme;
 
-  // Set the response headers
-  res.setHeader('Content-Type', 'image/svg+xml');
-  res.setHeader('Content-Disposition', `inline; filename="${username}-leetcode-stats.svg"`);
+  const maxSolved = Math.max(
+    data.easySolved,
+    data.mediumSolved,
+    data.hardSolved,
+  );
+  const scaleFactor = maxSolved ? MAX_BAR_HEIGHT / maxSolved : 1;
+  const yAxisLabels = Array.from({ length: 4 }, (_, i) =>
+    Math.round((maxSolved / 3) * i),
+  );
+
+  const barColors = barColor
+    ? [barColor, barColor, barColor]
+    : ["#10B981", "#F59E0B", "#EF4444"];
+
+  const bars = [
+    { label: "Easy", solved: data.easySolved, color: barColors[0] },
+    { label: "Medium", solved: data.mediumSolved, color: barColors[1] },
+    { label: "Hard", solved: data.hardSolved, color: barColors[2] },
+  ];
+
+  const barBorder = border
+    ? `border:1px solid ${themeTextColor};border-radius:12px;`
+    : "";
+
+  const svgParts: string[] = [
+    `<svg width="${SVG_WIDTH}" height="${SVG_HEIGHT}" xmlns="http://www.w3.org/2000/svg" style="background-color: ${backgroundColor};${barBorder}">`,
+    `<line x1="50" y1="${SVG_HEIGHT - 50}" x2="${SVG_WIDTH - 20}" y2="${SVG_HEIGHT - 50}" stroke="${themeTextColor}" stroke-width="2"/>`,
+    `<line x1="50" y1="${SVG_HEIGHT - 50}" x2="50" y2="30" stroke="${themeTextColor}" stroke-width="2"/>`,
+  ];
+
+  // Grid lines and Y-axis labels
+  svgParts.push(
+    yAxisLabels
+      .map(
+        (label, i) => `
+      <line x1="50" y1="${SVG_HEIGHT - 50 - label * scaleFactor}" x2="${SVG_WIDTH - 20}" y2="${SVG_HEIGHT - 50 - label * scaleFactor}" stroke="${gridLines}" stroke-width="0.5"/>
+      <text x="20" y="${SVG_HEIGHT - 50 - label * scaleFactor}" font-size="12" fill="${themeTextColor}">${label}</text>
+    `,
+      )
+      .join(""),
+  );
+
+  // Bars and labels
+  bars.forEach((bar, index) => {
+    const x = 100 + index * (barWidth + BAR_SPACING);
+    const height = bar.solved * scaleFactor;
+    const y = SVG_HEIGHT - 50 - height;
+
+    svgParts.push(`
+      <rect x="${x}" y="${y}" width="${barWidth}" height="${height}" fill="${bar.color}">
+        ${animation ? `<animate attributeName="height" from="0" to="${height}" dur="${animationDuration}" fill="freeze"/>` : ""}
+      </rect>
+      <text x="${x + barWidth / 2}" y="${y - 10}" font-size="12" fill="${themeTextColor}" text-anchor="middle">${bar.solved}</text>
+      <text x="${x + 10}" y="${SVG_HEIGHT - 30}" font-size="14" fill="${themeTextColor}">${bar.label}</text>
+    `);
+  });
+
+  if (animation) {
+    svgParts.push(`
+      <style>
+        rect {
+          transform-origin: bottom;
+        }
+      </style>
+    `);
+  }
+
+  svgParts.push("</svg>");
+  return svgParts.join("\n");
+}
+
+/**
+ * Handles GET requests for the LeetCode stats graph
+ */
+async function handleGetRequest(
+  username: string,
+  res: ApiResponse,
+  options: {
+    theme: string;
+    animation: boolean;
+    animationDuration: string;
+    border: boolean;
+    barWidth: number;
+    barColor: string | undefined;
+    textColor: string | undefined;
+  },
+) {
+  const data: LeetCodeData = await fetchLeetCodeData(username);
+
+  if (
+    !data ||
+    isNaN(data.easySolved) ||
+    isNaN(data.mediumSolved) ||
+    isNaN(data.hardSolved)
+  ) {
+    return res
+      .status(500)
+      .json({ error: "Failed to generate image: Invalid or incomplete data" });
+  }
+
+  const theme = getTheme(options.theme);
+  const svgContent = createBarGraphSVG(data, theme, options);
+  const buffer = Buffer.from(svgContent, "utf-8");
+
+  res.setHeader("Content-Type", "image/svg+xml");
+  res.setHeader(
+    "Content-Disposition",
+    `inline; filename="${username}-leetcode-stats-graph.svg"`,
+  );
+  res.setHeader("Cache-Control", "public, max-age=3600");
   res.status(200).end(buffer);
 }
 
+/**
+ * API handler for /api/graph/[username]
+ */
 export default async function handler(req: ApiRequest, res: ApiResponse) {
-  const { username, animation = 'true', animation_duration = '2s', theme = 'light', border = 'false', bars_width = '50' } = req.query;
+  if (req.method !== "GET") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
+
+  const query = parseQuery(req.query);
+  const { username } = query;
 
   if (!username) {
-    return res.status(400).json({ error: 'Username not provided' });
+    return res.status(400).json({ error: "Username not provided" });
   }
 
-  const parsedAnimation = animation === 'true';
-  const parsedBorder = border === 'true';
-  const parsedBarWidth = Number(bars_width);
-
-  if (req.method === 'GET') {
-    return await handleGetRequest(
-      username,
-      res,
-      theme,
-      parsedAnimation,
-      animation_duration,
-      parsedBorder,
-      parsedBarWidth
-    );
-  }
-  return res.status(405).json({ error: 'Method not allowed' });
+  await handleGetRequest(username, res, query);
 }
