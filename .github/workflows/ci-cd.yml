@@ -8,6 +8,12 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      actions: read
+      issues: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -25,13 +31,22 @@ jobs:
         run: npm run type-check
       - name: Build
         run: npm run build
+      - name: Debug Secrets
+        run: |
+          echo "VERCEL_TOKEN is set: ${{ secrets.VERCEL_TOKEN && 'yes' || 'no' }}"
+          echo "VERCEL_ORG_ID is set: ${{ secrets.VERCEL_ORG_ID && 'yes' || 'no' }}"
+          echo "VERCEL_PROJECT_ID is set: ${{ secrets.VERCEL_PROJECT_ID && 'yes' || 'no' }}"
+          echo "GITHUB_TOKEN is set: ${{ secrets.GITHUB_TOKEN && 'yes' || 'no' }}"
+          if [ "${{ secrets.GITHUB_TOKEN }}" != "" ]; then echo "GITHUB_TOKEN value (masked): ***"; else echo "GITHUB_TOKEN is empty"; fi
+        env:
+          LEETCODE_API_URL: https://leetcode-stats-api.herokuapp.com
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: ${{ github.event_name == 'push' && '--prod' || '' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-args: ${{ github.event_name == 'push' && '--prod' || '' }}
         env:
           LEETCODE_API_URL: https://leetcode-stats-api.herokuapp.com
