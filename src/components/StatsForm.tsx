@@ -5,7 +5,7 @@ import he from 'he';
 
 const themes = ['light', 'dark', 'transparent', 'neon', 'pastel', 'gradient'];
 const layouts = ['card', 'graph'];
-const BASE_URL = 'http://localhost:3000/';
+const BASE_URL = 'https://leetcode-status.vercel.app/';
 
 export default function StatsForm() {
   const [formData, setFormData] = useState({
