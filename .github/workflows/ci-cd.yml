@@ -1,5 +1,4 @@
-name: CI/CD Pipeline
-
+name: CI/CD Pipeline for leetcode-status
 on:
   push:
     branches: [main]
@@ -7,44 +6,32 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  build_and_deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "22.11.0"
-          cache: "npm"
-
-      - name: Install dependencies
+          node-version: '22.11.0'
+          cache: 'npm'
+      - name: Install Dependencies
         run: npm ci
-
-      - name: Run linting
-        run: npm run lint
-
-      - name: Run type checking
-        run: npm run type-check
-
-      - name: Run tests
+      - name: Run Tests
         run: npm test
-
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
+      - name: Lint Code
+        run: npm run lint
+      - name: Type Check
+        run: npm run type-check
+      - name: Build
+        run: npm run build
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
         with:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: "--prod"
+          vercel-args: ${{ github.event_name == 'push' && '--prod' || '' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          LEETCODE_API_URL: https://leetcode-stats-api.herokuapp.com
