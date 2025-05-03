@@ -1,18 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  .dark {
-    --bg-color: #1a202c; /* Dark background */
-    --text-color: #edf2f7; /* Light text */
-  }
-}
 
-.bg-gray-800 {
-  background-color: var(--bg-color);
-}
-
-.text-white {
-  color: var(--text-color);
+.tooltip::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -1rem;
+  transform: translateY(-50%);
+  border-width: 0.5rem;
+  border-style: solid;
+  border-color: transparent #3b82f6 transparent transparent;
 }
