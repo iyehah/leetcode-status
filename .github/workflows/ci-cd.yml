@@ -49,4 +49,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-args: ${{ github.event_name == 'push' && '--prod' || '' }}
         env:
-          LEETCODE_API_URL: https://leetcode-stats-api.herokuapp.com
+          LEETCODE_API_URL: https://leetcode-stats-api.herokuapp.com 
