@@ -5,7 +5,7 @@ import he from 'he';
 
 const themes = ['light', 'dark', 'transparent', 'neon', 'pastel', 'gradient'];
 const layouts = ['card', 'graph'];
-// const BASE_URL = 'https://leetcode-status.vercel.app';
+// const BASE_URL = 'http://localhost:3000';
 const BASE_URL = 'https://leetcode-status.vercel.app';
 
 export default function StatsForm() {
@@ -26,6 +26,7 @@ export default function StatsForm() {
     showStats: false,
     gradientStart: '#6366F1',
     gradientEnd: '#A855F7',
+    font: 'Roboto',
   });
   const [previewUrl, setPreviewUrl] = useState('');
   const [copied, setCopied] = useState('');
@@ -51,6 +52,7 @@ export default function StatsForm() {
         params.append('gradient_start', he.encode(formData.gradientStart));
         params.append('gradient_end', he.encode(formData.gradientEnd));
       }
+      params.append('font', formData.font);
       return params.toString();
     };
 
@@ -234,6 +236,22 @@ export default function StatsForm() {
               onChange={handleInputChange}
               className="mt-1 block w-full h-10 border-2 border-gray-300 rounded-lg shadow-sm hover:border-blue-400 transition-all duration-200"
             />
+          </div>
+          <div>
+            <label htmlFor="font" className="block text-sm font-medium text-gray-700">Font</label>
+            <select
+              id="font"
+              name="font"
+              value={formData.font}
+              onChange={(e) => setFormData({ ...formData, font: e.target.value })}
+              className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm hover:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+            >
+              <option value="Roboto">Roboto</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Lato">Lato</option>
+              <option value="Montserrat">Montserrat</option>
+              <option value="Source Sans Pro">Source Sans Pro</option>
+            </select>
           </div>
         </div>
         <div className="space-y-4">

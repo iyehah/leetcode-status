@@ -1,6 +1,7 @@
 import { fetchLeetCodeData } from "@/utils/leetcode";
 import { getTheme } from "@/utils/theme";
 import { parseQuery } from "@/utils/query";
+import { Buffer } from 'buffer';
 import {
   ApiRequest,
   ApiResponse,
@@ -202,6 +203,7 @@ function createSVG(
     showStats: boolean;
     gradientStart: string | undefined;
     gradientEnd: string | undefined;
+    font: string; // New font parameter
   },
 ): string {
   const {
@@ -217,13 +219,14 @@ function createSVG(
     showStats,
     gradientStart,
     gradientEnd,
+    font,
   } = options;
   const title = customTitle || username;
   const totalQuestions = data.totalEasy + data.totalMedium + data.totalHard;
   const themeWithCustomText = textColor ? { ...theme, textColor } : theme;
 
   const svgParts: string[] = [
-    `<svg width="${SVG_WIDTH}" height="${SVG_HEIGHT}" xmlns="http://www.w3.org/2000/svg">`,
+    `<svg width="${SVG_WIDTH}" height="${SVG_HEIGHT}" xmlns="http://www.w3.org/2000/svg" style="font-family: '${font}', sans-serif;">`,
     renderGradientBackground(themeWithCustomText, gradientStart, gradientEnd),
     `<rect x="0" y="0" width="${SVG_WIDTH}" height="${SVG_HEIGHT}" rx="20" ry="20" fill="${themeWithCustomText.backgroundColor}"/>`,
     border
@@ -299,6 +302,7 @@ async function handleGetRequest(
     showStats: boolean;
     gradientStart: string | undefined;
     gradientEnd: string | undefined;
+    font: string; // New font parameter
   },
 ) {
   const data: LeetCodeData = await fetchLeetCodeData(username);
@@ -337,11 +341,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   const query = parseQuery(req.query);
-  const { username } = query;
+  const { username, font = 'Roboto' } = query; // Default to 'Roboto' if font is not provided
 
   if (!username) {
     return res.status(400).json({ error: "Username not provided" });
   }
 
-  await handleGetRequest(username, res, query);
+  await handleGetRequest(username, res, { ...query, font });
 }

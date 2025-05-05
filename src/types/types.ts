@@ -56,6 +56,9 @@ export interface ParsedQuery {
   barColor: string | undefined;
   textColor: string | undefined;
   showStats: boolean;
+  gradientStart: string | undefined;
+  gradientEnd: string | undefined;
+  font?: string;
 }
 
 export interface ThemeColors {
@@ -96,6 +99,7 @@ export interface ParsedQuery {
   showStats: boolean;
   gradientStart: string | undefined;
   gradientEnd: string | undefined;
+  font?: string;
 }
 
 export type ApiRequest = NextApiRequest;
