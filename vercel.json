@@ -1,0 +1,19 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "pages/api/**/*.ts",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/card/(.*)",
+        "dest": "/api/card/[username].ts"
+      },
+      {
+        "src": "/api/graph/(.*)",
+        "dest": "/api/graph/[username].ts"
+      }
+    ]
+  }
