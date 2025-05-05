@@ -1,6 +1,7 @@
 import { fetchLeetCodeData } from "@/utils/leetcode";
 import { getTheme } from "@/utils/theme";
 import { parseQuery } from "@/utils/query";
+import { Buffer } from 'buffer';
 import {
   ApiRequest,
   ApiResponse,
@@ -21,6 +22,7 @@ const DEFAULT_ANIMATION_DURATION = "2s";
 /**
  * Renders the bar graph SVG
  */
+// Add font parameter to the options and apply it to text elements
 function createBarGraphSVG(
   data: LeetCodeData,
   theme: ThemeColors,
@@ -31,6 +33,7 @@ function createBarGraphSVG(
     barWidth: number;
     barColor: string | undefined;
     textColor: string | undefined;
+    font: string; // New font parameter
   },
 ): string {
   const {
@@ -40,6 +43,7 @@ function createBarGraphSVG(
     barWidth,
     barColor,
     textColor,
+    font,
   } = options;
   const {
     backgroundColor,
@@ -72,7 +76,7 @@ function createBarGraphSVG(
     : "";
 
   const svgParts: string[] = [
-    `<svg width="${SVG_WIDTH}" height="${SVG_HEIGHT}" xmlns="http://www.w3.org/2000/svg" style="background-color: ${backgroundColor};${barBorder}">`,
+    `<svg width="${SVG_WIDTH}" height="${SVG_HEIGHT}" xmlns="http://www.w3.org/2000/svg" style="font-family: '${font}', sans-serif; background-color: ${backgroundColor};${barBorder}">`,
     `<line x1="50" y1="${SVG_HEIGHT - 50}" x2="${SVG_WIDTH - 20}" y2="${SVG_HEIGHT - 50}" stroke="${themeTextColor}" stroke-width="2"/>`,
     `<line x1="50" y1="${SVG_HEIGHT - 50}" x2="50" y2="30" stroke="${themeTextColor}" stroke-width="2"/>`,
   ];
@@ -132,6 +136,7 @@ async function handleGetRequest(
     barWidth: number;
     barColor: string | undefined;
     textColor: string | undefined;
+    font: string; // New font parameter
   },
 ) {
   const data: LeetCodeData = await fetchLeetCodeData(username);
@@ -169,11 +174,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   const query = parseQuery(req.query);
-  const { username } = query;
+  const { username, font = 'Roboto' } = query; // Default to 'Roboto' if font is not provided
 
   if (!username) {
     return res.status(400).json({ error: "Username not provided" });
   }
 
-  await handleGetRequest(username, res, query);
+  await handleGetRequest(username, res, { ...query, font });
 }
