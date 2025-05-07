@@ -58,9 +58,9 @@ function renderTitle(
   const logoHeight = 28;
   const logoWidth = 40;
   const logoX = 20;
-  const logoY = 25;
+  const logoY = 14;
   const titleX = logo ? logoX + logoWidth + 10 : 20;
-  const titleY = logoY + logoHeight / 4;
+  const titleY = logoY/2 + logoHeight + 7;
 
   let logoSvg = "";
   if (logo) {
@@ -100,7 +100,7 @@ function renderProgressCircle(
   animationDuration: string,
 ): string {
   const centerX = 70;
-  const centerY = 120;
+  const centerY = 115;
   const circumference = 2 * Math.PI * CIRCLE_RADIUS;
   const progressPercentage = totalSolved / totalQuestions || 0;
   const progressArc = progressPercentage * circumference;
