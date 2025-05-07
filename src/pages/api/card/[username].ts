@@ -60,7 +60,7 @@ function renderTitle(
   const logoX = 20;
   const logoY = 14;
   const titleX = logo ? logoX + logoWidth + 10 : 20;
-  const titleY = logoY/2 + logoHeight + 7;
+  const titleY = logoY/2 + logoHeight + 3;
 
   let logoSvg = "";
   if (logo) {
