@@ -19,6 +19,7 @@ export function parseQuery(query: {
     show_stats = "false",
     gradient_start,
     gradient_end,
+    font = "Roboto", // Add font with default value
   } = query;
 
   const parsedBarWidth = Number(bars_width);
@@ -54,5 +55,6 @@ export function parseQuery(query: {
     gradientEnd: validColor(
       typeof gradient_end === "string" ? gradient_end : undefined,
     ),
+    font: typeof font === "string" ? font : "Roboto",
   };
 }
