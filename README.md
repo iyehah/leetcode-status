@@ -82,10 +82,10 @@ Customize the appearance using URL parameters.
 Card with gradient theme and custom gradient colors:
 
 ```md
-<img src="https://leetcode-status.vercel.app/api/iyehah?theme=gradient&gradient_start=%23FF0000&gradient_end=%2300FF00&show_stats=true"/>
+<img src="https://leetcode-status.vercel.app/api/card/iyehah?theme=gradient&gradient_start=%23FF0000&gradient_end=%2300FF00&show_stats=true"/>
 ```
 
-<img src="https://leetcode-status.vercel.app/api/iyehah?theme=gradient&gradient_start=%23FF0000&gradient_end=%2300FF00&show_stats=true"/>
+<img src="https://leetcode-status.vercel.app/api/card/iyehah?theme=gradient&gradient_start=%23FF0000&gradient_end=%2300FF00&show_stats=true"/>
 
 Graph with neon theme and wider bars:
 
