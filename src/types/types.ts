@@ -58,7 +58,7 @@ export interface ParsedQuery {
   showStats: boolean;
   gradientStart: string | undefined;
   gradientEnd: string | undefined;
-  font?: string;
+  font: string;
 }
 
 export interface ThemeColors {
@@ -99,7 +99,14 @@ export interface ParsedQuery {
   showStats: boolean;
   gradientStart: string | undefined;
   gradientEnd: string | undefined;
-  font?: string;
+  font: string;
+  pieColors?: string | string[];
+  easyColor?: string;
+  mediumColor?: string;
+  hardColor?: string;
+  showLabels: boolean;
+  pieRadius: number;
+  showLegend: boolean;
 }
 
 export type ApiRequest = NextApiRequest;

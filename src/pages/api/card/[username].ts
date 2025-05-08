@@ -203,7 +203,7 @@ function createSVG(
     showStats: boolean;
     gradientStart: string | undefined;
     gradientEnd: string | undefined;
-    font: string; // New font parameter
+    font: string;
   },
 ): string {
   const {
@@ -302,7 +302,7 @@ async function handleGetRequest(
     showStats: boolean;
     gradientStart: string | undefined;
     gradientEnd: string | undefined;
-    font: string; // New font parameter
+    font: string;
   },
 ) {
   const data: LeetCodeData = await fetchLeetCodeData(username);
@@ -341,11 +341,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   const query = parseQuery(req.query);
-  const { username, font = 'Roboto' } = query; // Default to 'Roboto' if font is not provided
+  const { username } = query;
 
   if (!username) {
     return res.status(400).json({ error: "Username not provided" });
   }
-
-  await handleGetRequest(username, res, { ...query, font });
+  await handleGetRequest(username, res, query);
 }
