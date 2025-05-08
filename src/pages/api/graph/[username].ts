@@ -22,7 +22,6 @@ const DEFAULT_ANIMATION_DURATION = "2s";
 /**
  * Renders the bar graph SVG
  */
-// Add font parameter to the options and apply it to text elements
 function createBarGraphSVG(
   data: LeetCodeData,
   theme: ThemeColors,
@@ -33,7 +32,7 @@ function createBarGraphSVG(
     barWidth: number;
     barColor: string | undefined;
     textColor: string | undefined;
-    font: string; // New font parameter
+    font: string;
   },
 ): string {
   const {
@@ -136,7 +135,7 @@ async function handleGetRequest(
     barWidth: number;
     barColor: string | undefined;
     textColor: string | undefined;
-    font: string; // New font parameter
+    font: string;
   },
 ) {
   const data: LeetCodeData = await fetchLeetCodeData(username);
@@ -174,11 +173,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   }
 
   const query = parseQuery(req.query);
-  const { username, font = 'Roboto' } = query; // Default to 'Roboto' if font is not provided
+  const { username } = query;
 
   if (!username) {
     return res.status(400).json({ error: "Username not provided" });
   }
-
-  await handleGetRequest(username, res, { ...query, font });
+  await handleGetRequest(username, res, query);
 }
