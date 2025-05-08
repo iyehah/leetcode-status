@@ -48,7 +48,7 @@ export function parseQuery(query: {
   return {
     username: typeof username === "string" ? username : "",
     theme: typeof theme === "string" ? theme : "light",
-    border: border === "true",
+    border: border === "false",
     hideTitle: hide_title === "true",
     customTitle: typeof custom_title === "string" ? custom_title : undefined,
     animation: animation === "true",
