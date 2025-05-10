@@ -28,8 +28,7 @@ Choose from the following themes:
 | *transparent* | <img src="https://leetcode-status.vercel.app/api/card/iyehah?theme=transparent&logo=true&custom_title=Iyehah%20Hacen" height=150/> | <img src="https://leetcode-status.vercel.app/api/graph/iyehah?theme=transparent&bars_width=50" height=150/> | <img src="https://leetcode-status.vercel.app/api/pie/iyehah?theme=transparent&bars_width=50" height=150/> |
 | *neon* | <img src="https://leetcode-status.vercel.app/api/card/iyehah?theme=neon&logo=true&custom_title=Iyehah%20Hacen" height=150/> | <img src="https://leetcode-status.vercel.app/api/graph/iyehah?theme=neon&bars_width=50" height=150/> | <img src="https://leetcode-status.vercel.app/api/pie/iyehah?theme=neon&bars_width=50" height=150/> |
 | *pastel* | <img src="https://leetcode-status.vercel.app/api/card/iyehah?theme=pastel&logo=true&custom_title=Iyehah%20Hacen" height=150/> | <img src="https://leetcode-status.vercel.app/api/graph/iyehah?theme=pastel&bars_width=50" height=150/> | <img src="https://leetcode-status.vercel.app/api/pie/iyehah?theme=pastel&bars_width=50" height=150/> |
-| *gradient* | <img src="https://leetcode-status.vercel.app/api/card/iyehah?theme=gradient&gradient_start=%236366F1&gradient_end=%23A855F7&logo=true&custom_title=Iyehah%20Hacen" height=150/> | <img src="https://leetcode-status.vercel.app/api/graph/iyehah?theme=gradient&gradient_start=%236366F1&gradient_end=%23A855F7&bars_width=50" height=150/> | <img src="https://leetcode-status.vercel.app/api/pie/iyehah?theme=gradient&gradient_start=%236366F1&gradient_end=%23A855F7&bars_width=50" height=150/> |
-
+| *gradient* | <img src="https://leetcode-status.vercel.app/api/card/iyehah?theme=gradient&gradient_start=%236366F1&gradient_end=%23A855F7&logo=true&custom_title=Iyehah%20Hacen" height=150/> |
 
 ## Customization
 
